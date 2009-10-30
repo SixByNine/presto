@@ -1,6 +1,19 @@
 SUBDIRS=slalib
 
+
 lib_LTLIBRARIES=libpresto.la
+
+# I thought about installing the headers, but I don't think they're used outside of presto
+#libpresto_la_includedir=$(includedir)/presto/
+#libpresto_la_include_HEADERS=accel.h database.h gmrt.h mpiprepsubband_cmd.h prepfold_cmd.h rawtype.h search_bin_cmd.h spigot2filterbank_cmd.h\
+#	accelsearch_cmd.h dftfold.h imio.h multibeam.h prepsubband_cmd.h rdascat.h search_rzw_cmd.h toas2dat_cmd.h\
+#	bincand_cmd.h dftfold_cmd.h makedata.h multifiles.h presto.h readfile_cmd.h show_pfd_cmd.h vectors.h\
+#	bpp.h downsample_cmd.h makeinf.h orbint.h profile_cmd.h realfft_cmd.h sigproc_fb.h wapp.h\
+#	cdflib.h f77.h mask.h plot2d.h psrfits.h rednoise_cmd.h slalib.h wapp_key.h\
+#	chkio.h fitsfile.h meminfo.h prepdata_cmd.h randlib.h rfifind.h slamac.h wapp_y.tab.h\
+#	clk_tck.h fitshead.h misc_utils.h prepfold.h ransomfft.h rfifind_cmd.h spigot.h zapbirds_cmd.h
+
+
 bin_PROGRAMS = makedata makeinf mjd2cal realfft quicklook\
 	   search_bin search_rzw swap_endian prepdata\
 	   check_parkes_raw bary shiftdata dftfold\
@@ -11,7 +24,7 @@ bin_PROGRAMS = makedata makeinf mjd2cal realfft quicklook\
 	   spigotSband2filterbank GBT350filterbank\
 	   psrorbit window plotbincand prepfold show_pfd\
 	   rfifind zapbirds explorefft exploredat weight_psrfits\
-	   profile 
+	   profile makewisdom
 
 
 PRESTOOBJS = amoeba.c atwood.c barycenter.c birdzap.c cand_output.c\
@@ -43,6 +56,11 @@ INCLUDES=@GLIB_CFLAGS@ @FFTW_CFLAGS@ @CFITSIO_CFLAGS@ @PGPLOT_CFLAGS@ -I$(PRESTO
 	mv ../clig/$*_cmd.h ../include/
 	mv ../clig/$*_cmd.c .
 	cp ../clig/$*.1 ../docs/
+
+
+wisdom: makewisdom
+	./makewisdom
+	cp fftw_wisdom.txt $(PRESTO)/lib
 
 
 libpresto_la_SOURCES=$(PRESTOOBJS) $(INSTRUMENTOBJS)

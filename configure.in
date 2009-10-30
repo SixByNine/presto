@@ -43,11 +43,26 @@ fi
 AC_PROG_INSTALL
 AC_PROG_LIBTOOL
 
-AM_PATH_GLIB
+AM_PATH_GLIB_2_0
 
+if test "x$GLIB_LIBS" == "x" ; then
+	 AC_ERROR("Can't find glib library.");
+fi
 
 SWIN_LIB_PGPLOT
+
+if test X$have_pgplot != Xyes; then
+	AC_ERROR("Can't find your PGPLOT installation")
+fi
+
 SWIN_LIB_CFITSIO
+
+if test X$have_cfitsio != Xyes; then
+	AC_ERROR("Can't find your CFITSIO installation")
+fi
+
+
+
 MJK_LIB_FFTW
 
 if test X$have_fftw != Xyes; then
