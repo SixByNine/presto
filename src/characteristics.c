@@ -1,3 +1,6 @@
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
 #include "presto.h"
 
 static double extended_equiv_gaussian_sigma(double logp);

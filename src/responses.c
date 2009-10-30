@@ -1,3 +1,6 @@
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
 #include "presto.h"
 
 #define MIN_NUMDATA 131072

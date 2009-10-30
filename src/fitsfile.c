@@ -1,3 +1,6 @@
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
 /*** File libwcs/fitsfile.c
  *** July 11, 2003
  *** By Doug Mink, dmink@cfa.harvard.edu

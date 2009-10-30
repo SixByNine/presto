@@ -1,3 +1,6 @@
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
 #include "vectors.h"
 
 float *gen_fvect(long length)

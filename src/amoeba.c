@@ -1,3 +1,6 @@
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
 /* Note:  This version of the Downhill Simplex Algorithm is     */
 /*        a modified version on the NR in C 2ed version         */
 /*        by Press et el.  Their copyright statement is below.  */

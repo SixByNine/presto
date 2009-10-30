@@ -1,3 +1,6 @@
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
 #include "presto.h"
 
 void hunt(double *xx, int n, double x, int *jlo);

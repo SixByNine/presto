@@ -1,3 +1,6 @@
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
 #include "dftfold.h"
 #include "presto.h"
 /* #include "plot2d.h" */

@@ -1,3 +1,6 @@
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
 #include "multifiles.h"
 
 #ifndef __USE_FILE_OFFSET64

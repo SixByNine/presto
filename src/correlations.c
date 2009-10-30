@@ -1,3 +1,6 @@
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
 #include "presto.h"
 
 fcomplex *complex_corr_conv(fcomplex * data, fcomplex * kernel,

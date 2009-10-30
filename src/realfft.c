@@ -1,3 +1,6 @@
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
 /*     Real-Valued Data FFT Program        */
 /*          by Scott Ransom                */
 /*            Version 3.0                  */

@@ -1,3 +1,6 @@
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
 #ifndef SWAP
 /* Swaps two variables of undetermined type */
 #define SWAP(a,b) tmpswap=(a);(a)=(b);(b)=tmpswap;

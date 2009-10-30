@@ -1,3 +1,6 @@
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
 #include "presto.h"
 
 double *events_fdot_correct(double *events, int Nevents, 

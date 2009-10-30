@@ -1,3 +1,6 @@
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
 /* SOLVOPT version 1.1 (June, 1997)
    by Alexei Kuntsevich and Franz Kappel
    University of Graz, Austria

@@ -1,3 +1,6 @@
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
 /*                                    */
 /* shiftdata:  Data shifting routine. */
 /*        by Scott M. Ransom          */

@@ -1,3 +1,6 @@
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
 #include "plot2d.h"
 
 void multi_prof_plot(int proflen, int numprofs, double *profiles,

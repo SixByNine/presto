@@ -1,3 +1,6 @@
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
 /*
   ranges_to_ivect() is Copyright 2004 by Scott Ransom
   Also released under the GPL.

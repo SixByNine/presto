@@ -1,3 +1,6 @@
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
 #include "presto.h"
 
 double tree_max_dm(int numchan, double dt, double lofreq, double hifreq)

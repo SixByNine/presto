@@ -1,3 +1,6 @@
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
 #define COPYSIGN(a,b) ((b) < 0.0 ? (-fabs(a)) : (fabs(a)))
 
 /*  NOTE:  See presto.h for function definitions. */

@@ -1,3 +1,6 @@
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
 #include "ransomfft.h"
 
 /* Optimized "two-pass" mass storage FFT function for real data   */

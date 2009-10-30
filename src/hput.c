@@ -1,3 +1,6 @@
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
 /*** File libwcs/hput.c
  *** January 4, 2002
  *** By Doug Mink, dmink@cfa.harvard.edu

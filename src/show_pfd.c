@@ -1,3 +1,6 @@
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
 #include "prepfold.h"
 #include "show_pfd_cmd.h"
 

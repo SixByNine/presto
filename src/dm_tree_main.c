@@ -1,3 +1,6 @@
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
 /*
    It:
 	1. Accepts a stream of single byte input samples

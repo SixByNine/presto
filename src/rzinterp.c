@@ -1,3 +1,6 @@
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
 #include "presto.h"
 
 fcomplex **corr_rz_plane(fcomplex * data, int numdata, int numbetween,

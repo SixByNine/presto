@@ -1,3 +1,6 @@
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
 /*** File wcslib/imio.c
  *** May 20, 2003
  *** By Doug Mink, dmink@cfa.harvard.edu

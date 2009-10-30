@@ -1,3 +1,6 @@
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
 /*
  *  This Quickselect routine is based on the algorithm described in
  *  "Numerical recipies in C", Second Edition,

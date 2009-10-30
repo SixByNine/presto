@@ -1,3 +1,6 @@
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
 #include "plot2d.h"
 
 void powerplot(int npts, float *freqs, float *amp, float norm, int id)
