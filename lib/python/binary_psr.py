@@ -42,21 +42,17 @@ class binary_psr:
 
     def __init__(self, parfilenm):
         self.par = parfile.psr_par(parfilenm)
-        if not self.par.__dict__.has_key('BINARY'):
+        if not hasattr(self.par, 'BINARY'):
             print "'%s' doesn't contain parameters for a binary pulsar!"
             return None
-        else:
-            if self.par.__dict__.has_key("TASC"):
-                self.T0 = self.par.TASC
-            else:
-                self.T0 = self.par.T0
         self.PBsec = self.par.PB*SECPERDAY
+        self.T0 = self.par.T0
 
     def calc_anoms(self, MJD):
         """
         calc_anoms(MJD):
-            Return a tuple of the mean, eccentric, and true anomalies (all in radians)
-                at the barycentric epoch MJD(s).
+            Return a tuple of the mean, eccentric, and true anomalies (all
+                in radians) at the barycentric epoch MJD(s).
         """
         MJD = myasarray(MJD)
         difft = (MJD - self.T0)*SECPERDAY
@@ -71,7 +67,7 @@ class binary_psr:
         """
         most_recent_peri(MJD):
             Return the MJD(s) of the most recent periastrons that occurred
-            before the input MJD(s).
+                before the input MJD(s).
         """
         MJD = myasarray(MJD)
         difft = MJD - self.T0
@@ -83,7 +79,7 @@ class binary_psr:
         """
         eccentric_anomaly(mean_anomaly):
             Return the eccentric anomaly in radians, given a set of mean_anomalies
-            in radians.
+                in radians.
         """
         ma = Num.fmod(mean_anomaly, TWOPI)
         ma = Num.where(ma < 0.0, ma+TWOPI, ma)
@@ -99,11 +95,12 @@ class binary_psr:
     def calc_omega(self, MJD):
         """
         calc_omega(MJD):
-            Return the argument of periastron (omega in radians) at time (or times) MJD(s).
+            Return the argument of periastron (omega in radians) at
+            time (or times) MJD(s).
         """
         MJD = myasarray(MJD)
         difft = (MJD - self.T0)*SECPERDAY
-        if self.par.__dict__.has_key('OMDOT'):
+        if hasattr(self.par, 'OMDOT'):
             # Note:  This is an array
             return (self.par.OM + difft/SECPERJULYR*self.par.OMDOT)*DEGTORAD
         else:
@@ -116,9 +113,9 @@ class binary_psr:
         """
         ma, ea, ta = self.calc_anoms(MJD)
         ws = self.calc_omega(MJD)
-        c1 = TWOPI*self.par.A1/self.PBsec;
-        c2 = Num.cos(ws)*Num.sqrt(1-self.par.E*self.par.E);
-        sws = Num.sin(ws);
+        c1 = TWOPI*self.par.A1/self.PBsec
+        c2 = Num.cos(ws)*Num.sqrt(1-self.par.E*self.par.E)
+        sws = Num.sin(ws)
         cea = Num.cos(ea)
         return SOL/1000.0*c1*(c2*cea - sws*Num.sin(ea)) / (1.0 - self.par.E*cea)
 
@@ -149,6 +146,29 @@ class binary_psr:
         x = self.par.A1/sini
         r = x*(1.0-self.par.E*self.par.E)/(1.0+self.par.E*Num.cos(ta))
         return -r*Num.sin(orb_phs)*sini, -r*Num.cos(orb_phs)
+
+    def demodulate_TOAs(self, MJD):
+        """
+        demodulate_TOAs(MJD):
+            Return arrival times correctly orbitally de-modulated using
+                the iterative procedure described in Deeter, Boynton, and Pravdo
+                (1981ApJ...247.1003D, thanks, Deepto!).  This corrects for the
+                fact that the emitted times are what you want when you only
+                have the arrival times.  MJD can be an array.  The returned
+                values are in MJD as well.
+        """
+        ts = MJD[:]  # start of iteration
+        dts = Num.ones_like(MJD)
+        # This is a simple Newton's Method iteration based on
+        # the code orbdelay.c written by Deepto Chakrabarty
+        while (Num.maximum.reduce(Num.fabs(dts)) > 1e-10):
+            # radial position in lt-days
+            xs = -self.position(ts, inc=90.0)[0]/86400.0
+            # radial velocity in units of C
+            dxs = self.radial_velocity(ts)*1000.0/SOL
+            dts = (ts + xs - MJD) / (1.0 + dxs)
+            ts = ts - dts
+        return ts
 
     def shapiro_delays(self, R, S, ecc_anoms):
         """

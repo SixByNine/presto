@@ -140,7 +140,8 @@ class psr_par:
             ecc = math.sqrt(self.EPS1 * self.EPS1 + self.EPS2 * self.EPS2)
             omega = math.atan2(self.EPS1, self.EPS2)
             setattr(self, 'E', ecc)
-            setattr(self, 'OM', omega)
+            setattr(self, 'OM', omega * pu.RADTODEG)
+            setattr(self, 'T0', self.TASC + self.PB * omega/pu.TWOPI)
         if hasattr(self, 'PB') and hasattr(self, 'A1') and not hasattr(self, 'E'):
             setattr(self, 'E', 0.0)
         pf.close()
