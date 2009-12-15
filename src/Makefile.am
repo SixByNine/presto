@@ -48,7 +48,7 @@ PLOT2DOBJS = powerplot.c xyline.c
 
 DEFS=@FFTDEF@ -DUSEMMAP
 LDADD=-lm -lpresto @FFTW_LIBS@
-INCLUDES=@GLIB_CFLAGS@ @FFTW_CFLAGS@ @CFITSIO_CFLAGS@ @PGPLOT_CFLAGS@ -I$(PRESTO)/include
+INCLUDES=@GLIB_CFLAGS@ @FFTW_CFLAGS@ @CFITSIO_CFLAGS@ @PGPLOT_CFLAGS@ -I@PRESTO_DIR@/include
 
 # Rules for CLIG generated files
 %_cmd.c : ../clig/%_cmd.cli
@@ -60,7 +60,7 @@ INCLUDES=@GLIB_CFLAGS@ @FFTW_CFLAGS@ @CFITSIO_CFLAGS@ @PGPLOT_CFLAGS@ -I$(PRESTO
 
 wisdom: makewisdom
 	./makewisdom
-	cp fftw_wisdom.txt $(PRESTO)/lib
+	cp fftw_wisdom.txt @PRESTO_DIR@/lib
 
 
 libpresto_la_SOURCES=$(PRESTOOBJS) $(INSTRUMENTOBJS)
@@ -98,7 +98,7 @@ prepfold_SOURCES=prepfold_cmd.c prepfold.c prepfold_utils.c prepfold_plot.c leas
 prepfold_LDADD=$(LDADD) @CFITSIO_LIBS@ @PGPLOT_LIBS@
 
 spigot2filterbank_SOURCES=spigot2filterbank_cmd.c spigot2filterbank.c sla.c  
-spigot2filterbank_LDADD=$(LDADD) -lsla
+spigot2filterbank_LDADD=$(LDADD) slalib/libsla.la $(FLIBS)
 
 GBT350filterbank_SOURCES=GBT350filterbank.c  
 

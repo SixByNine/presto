@@ -43,6 +43,22 @@ fi
 AC_PROG_INSTALL
 AC_PROG_LIBTOOL
 
+
+
+AC_MSG_CHECKING([PRESTO points to a valid directory])
+if test -d $PRESTO -a -e $PRESTO/include/presto.h  ; then
+	AC_MSG_RESULT(yes)
+	AC_MSG_RESULT(PRESTO=$PRESTO)
+	PRESTO_DIR=$PRESTO
+	AC_SUBST(PRESTO_DIR)
+else
+	AC_MSG_RESULT(no)
+	AC_MSG_RESULT(PRESTO=$PRESTO)
+	AC_ERROR("You must set \$PRESTO to be the root of the presto directory.");
+fi
+
+
+
 AM_PATH_GLIB_2_0
 
 if test "x$GLIB_LIBS" == "x" ; then
@@ -71,6 +87,7 @@ else
 	FFTDEF="-DUSEFFTW"
 	AC_SUBST(FFTDEF)
 fi
+
 
 AM_INIT_AUTOMAKE([foreign subdir-objects])
 
