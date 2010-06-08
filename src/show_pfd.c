@@ -47,7 +47,8 @@ int main(int argc, char *argv[])
     */
 
    print_prepfoldinfo(&search);
-
+   if(cmd->infoonlyP)
+     return 0;
    /*
     *   Zap requested subbands or intervals
     */

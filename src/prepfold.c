@@ -466,6 +466,10 @@ int main(int argc, char *argv[])
          struct spectra_info s;
          
          printf("PSRFITS input file information:\n");
+          // -1 causes the data to determine if we use weights, scales, & offsets
+         s.apply_weight = (cmd->noweightsP) ? 0 : -1;
+         s.apply_scale  = (cmd->noscalesP) ? 0 : -1;
+         s.apply_offset = (cmd->nooffsetsP) ? 0 : -1;
          read_PSRFITS_files(cmd->argv, cmd->argc, &s);
          local_N = s.N;
          ptsperrec = s.spectra_per_subint;
@@ -1413,6 +1417,8 @@ int main(int argc, char *argv[])
             else {
                int mm;
                float runavg = 0.0;
+               static float oldrunavg = 0.0;
+               static int firsttime = 1;
 
                if (useshorts)
                   numread = read_shorts(infiles[0], data, worklen, numchan);
@@ -1422,6 +1428,13 @@ int main(int argc, char *argv[])
                   for (mm = 0; mm < numread; mm++)
                      runavg += data[mm];
                   runavg /= numread;
+                  if (firsttime) {
+                      firsttime = 0;
+                  } else {
+                      // Use a running average of the block averages to subtract...
+                      runavg = 0.95 * oldrunavg + 0.05 * runavg;
+                  }
+                  oldrunavg = runavg;
                   for (mm = 0; mm < numread; mm++)
                      data[mm] -= runavg;
                }
