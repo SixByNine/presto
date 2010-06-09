@@ -47,7 +47,7 @@ PLOT2DOBJS = powerplot.c xyline.c
 
 
 DEFS=@FFTDEF@ -DUSEMMAP
-LDADD=-lm -lpresto @FFTW_LIBS@
+LDADD=-lm libpresto.la @FFTW_LIBS@
 INCLUDES=@GLIB_CFLAGS@ @FFTW_CFLAGS@ @CFITSIO_CFLAGS@ @PGPLOT_CFLAGS@ -I@PRESTO_DIR@/include
 
 # Rules for CLIG generated files
