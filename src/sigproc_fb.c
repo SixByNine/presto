@@ -316,6 +316,9 @@ int read_filterbank_header(sigprocfb * fb, FILE * inputfile)
       } else if(strings_equal(string, "ibeam")) {
          chkfread(&(fb->ibeam),sizeof(int),1,inputfile);
          totalbytes += sizeof(int);
+      } else if (strings_equal(string,"barycentric")) {
+         fread(&(fb->barycentric),sizeof(int),1,inputfile);
+         totalbytes+=sizeof(int);
       } else if (expecting_rawdatafile) {
          strcpy(fb->inpfile, string);
          expecting_rawdatafile = 0;
@@ -447,6 +450,7 @@ void sigprocfb_to_inf(sigprocfb * fb, infodata * idata)
    idata->bary = 0;
    idata->numonoff = 0;
    idata->dm = 0.0;
+   idata->bary = fb->barycentric;
    strcpy(idata->band, "Radio");
    strcpy(idata->analyzer, "Scott Ransom");
    strcpy(idata->observer, "Unknown");

@@ -20,6 +20,7 @@ typedef struct SIGPROCFB {
   int ibeam;             /* Beam number used for this data */
   int sumifs;            /* Whether the IFs are summed or not */
   int headerlen;         /* Header length in bytes */
+  int barycentric;       /* is it barycentric corrected */
 } sigprocfb;
 
 /* sigproc_fb.c */

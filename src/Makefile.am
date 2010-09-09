@@ -46,7 +46,7 @@ INSTRUMENTOBJS = multibeam.c bpp.c gmrt.c spigot.c sigproc_fb.c\
 PLOT2DOBJS = powerplot.c xyline.c
 
 
-DEFS=@FFTDEF@ -DUSEMMAP
+DEFS+=@FFTDEF@ -DUSEMMAP
 LDADD=-lm libpresto.la @FFTW_LIBS@
 INCLUDES=@GLIB_CFLAGS@ @FFTW_CFLAGS@ @CFITSIO_CFLAGS@ @PGPLOT_CFLAGS@ -I@PRESTO_DIR@/include
 
