@@ -40,7 +40,7 @@ PRESTOOBJS = amoeba.c atwood.c barycenter.c birdzap.c cand_output.c\
 	     fitsfile.c hget.c hput.c imio.c
 
 INSTRUMENTOBJS = multibeam.c bpp.c gmrt.c spigot.c sigproc_fb.c\
-		 wapp.c wapp_head_parse.c wapp_y.tab.c psrfits.c
+		 wapp.c wapp_head_parse.c wapp_mkheaderlex.c wapp_y.tab.c psrfits.c
 
 
 PLOT2DOBJS = powerplot.c xyline.c

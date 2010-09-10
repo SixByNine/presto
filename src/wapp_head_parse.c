@@ -3,6 +3,7 @@
 #endif
 int wapp_incfile_length;
 
+#include <stdlib.h>
 #include <stdio.h>
 #include <fcntl.h>
 #include <string.h>

@@ -87,7 +87,8 @@ am__objects_1 = amoeba.lo atwood.lo barycenter.lo birdzap.lo \
 	twopass_real_inv.lo vectors.lo multifiles.lo mask.lo \
 	fitsfile.lo hget.lo hput.lo imio.lo
 am__objects_2 = multibeam.lo bpp.lo gmrt.lo spigot.lo sigproc_fb.lo \
-	wapp.lo wapp_head_parse.lo wapp_y.tab.lo psrfits.lo
+	wapp.lo wapp_head_parse.lo wapp_mkheaderlex.lo wapp_y.tab.lo \
+	psrfits.lo
 am_libpresto_la_OBJECTS = $(am__objects_1) $(am__objects_2)
 libpresto_la_OBJECTS = $(am_libpresto_la_OBJECTS)
 binPROGRAMS_INSTALL = $(INSTALL_PROGRAM)
@@ -95,44 +96,44 @@ PROGRAMS = $(bin_PROGRAMS)
 am_GBT350filterbank_OBJECTS = GBT350filterbank.$(OBJEXT)
 GBT350filterbank_OBJECTS = $(am_GBT350filterbank_OBJECTS)
 GBT350filterbank_LDADD = $(LDADD)
-GBT350filterbank_DEPENDENCIES =
+GBT350filterbank_DEPENDENCIES = libpresto.la
 am_accelsearch_OBJECTS = accelsearch_cmd.$(OBJEXT) \
 	accel_utils.$(OBJEXT) accelsearch.$(OBJEXT) zapping.$(OBJEXT)
 accelsearch_OBJECTS = $(am_accelsearch_OBJECTS)
-am__DEPENDENCIES_1 =
+am__DEPENDENCIES_1 = libpresto.la
 accelsearch_DEPENDENCIES = $(am__DEPENDENCIES_1)
 bary_SOURCES = bary.c
 bary_OBJECTS = bary.$(OBJEXT)
 bary_LDADD = $(LDADD)
-bary_DEPENDENCIES =
+bary_DEPENDENCIES = libpresto.la
 am_bincand_OBJECTS = bincand_cmd.$(OBJEXT) bincand.$(OBJEXT)
 bincand_OBJECTS = $(am_bincand_OBJECTS)
 bincand_LDADD = $(LDADD)
-bincand_DEPENDENCIES =
+bincand_DEPENDENCIES = libpresto.la
 am_cal2mjd_OBJECTS = cal2mjd.$(OBJEXT)
 cal2mjd_OBJECTS = $(am_cal2mjd_OBJECTS)
 cal2mjd_LDADD = $(LDADD)
-cal2mjd_DEPENDENCIES =
+cal2mjd_DEPENDENCIES = libpresto.la
 am_check_parkes_raw_OBJECTS = check_parkes_raw.$(OBJEXT)
 check_parkes_raw_OBJECTS = $(am_check_parkes_raw_OBJECTS)
 check_parkes_raw_LDADD = $(LDADD)
-check_parkes_raw_DEPENDENCIES =
+check_parkes_raw_DEPENDENCIES = libpresto.la
 am_dat2sdat_OBJECTS = dat2sdat.$(OBJEXT)
 dat2sdat_OBJECTS = $(am_dat2sdat_OBJECTS)
 dat2sdat_LDADD = $(LDADD)
-dat2sdat_DEPENDENCIES =
+dat2sdat_DEPENDENCIES = libpresto.la
 am_dftfold_OBJECTS = dftfold_cmd.$(OBJEXT) dftfold.$(OBJEXT)
 dftfold_OBJECTS = $(am_dftfold_OBJECTS)
 dftfold_LDADD = $(LDADD)
-dftfold_DEPENDENCIES =
+dftfold_DEPENDENCIES = libpresto.la
 am_downsample_OBJECTS = downsample.$(OBJEXT) downsample_cmd.$(OBJEXT)
 downsample_OBJECTS = $(am_downsample_OBJECTS)
 downsample_LDADD = $(LDADD)
-downsample_DEPENDENCIES =
+downsample_DEPENDENCIES = libpresto.la
 dump_spigot_zerolag_SOURCES = dump_spigot_zerolag.c
 dump_spigot_zerolag_OBJECTS = dump_spigot_zerolag.$(OBJEXT)
 dump_spigot_zerolag_LDADD = $(LDADD)
-dump_spigot_zerolag_DEPENDENCIES =
+dump_spigot_zerolag_DEPENDENCIES = libpresto.la
 am__objects_3 = powerplot.$(OBJEXT) xyline.$(OBJEXT)
 am_exploredat_OBJECTS = exploredat.$(OBJEXT) $(am__objects_3)
 exploredat_OBJECTS = $(am_exploredat_OBJECTS)
@@ -144,23 +145,23 @@ am_makedata_OBJECTS = com.$(OBJEXT) randlib.$(OBJEXT) \
 	makedata.$(OBJEXT)
 makedata_OBJECTS = $(am_makedata_OBJECTS)
 makedata_LDADD = $(LDADD)
-makedata_DEPENDENCIES =
+makedata_DEPENDENCIES = libpresto.la
 am_makeinf_OBJECTS = makeinf.$(OBJEXT)
 makeinf_OBJECTS = $(am_makeinf_OBJECTS)
 makeinf_LDADD = $(LDADD)
-makeinf_DEPENDENCIES =
+makeinf_DEPENDENCIES = libpresto.la
 makewisdom_SOURCES = makewisdom.c
 makewisdom_OBJECTS = makewisdom.$(OBJEXT)
 makewisdom_LDADD = $(LDADD)
-makewisdom_DEPENDENCIES =
+makewisdom_DEPENDENCIES = libpresto.la
 am_mjd2cal_OBJECTS = djcl.$(OBJEXT) mjd2cal.$(OBJEXT)
 mjd2cal_OBJECTS = $(am_mjd2cal_OBJECTS)
 mjd2cal_LDADD = $(LDADD)
-mjd2cal_DEPENDENCIES =
+mjd2cal_DEPENDENCIES = libpresto.la
 am_patchdata_OBJECTS = patchdata.$(OBJEXT)
 patchdata_OBJECTS = $(am_patchdata_OBJECTS)
 patchdata_LDADD = $(LDADD)
-patchdata_DEPENDENCIES =
+patchdata_DEPENDENCIES = libpresto.la
 am_plotbincand_OBJECTS = plotbincand.$(OBJEXT) $(am__objects_3)
 plotbincand_OBJECTS = $(am_plotbincand_OBJECTS)
 plotbincand_DEPENDENCIES = $(am__DEPENDENCIES_1)
@@ -187,18 +188,18 @@ psrorbit_DEPENDENCIES = $(am__DEPENDENCIES_1)
 quicklook_SOURCES = quicklook.c
 quicklook_OBJECTS = quicklook.$(OBJEXT)
 quicklook_LDADD = $(LDADD)
-quicklook_DEPENDENCIES =
+quicklook_DEPENDENCIES = libpresto.la
 am_readfile_OBJECTS = readfile_cmd.$(OBJEXT) readfile.$(OBJEXT)
 readfile_OBJECTS = $(am_readfile_OBJECTS)
 readfile_DEPENDENCIES = $(am__DEPENDENCIES_1)
 am_realfft_OBJECTS = realfft_cmd.$(OBJEXT) realfft.$(OBJEXT)
 realfft_OBJECTS = $(am_realfft_OBJECTS)
 realfft_LDADD = $(LDADD)
-realfft_DEPENDENCIES =
+realfft_DEPENDENCIES = libpresto.la
 am_rednoise_OBJECTS = rednoise.$(OBJEXT) rednoise_cmd.$(OBJEXT)
 rednoise_OBJECTS = $(am_rednoise_OBJECTS)
 rednoise_LDADD = $(LDADD)
-rednoise_DEPENDENCIES =
+rednoise_DEPENDENCIES = libpresto.la
 am_rfifind_OBJECTS = rfifind_cmd.$(OBJEXT) rfifind.$(OBJEXT) \
 	rfi_utils.$(OBJEXT) rfifind_plot.$(OBJEXT) \
 	range_parse.$(OBJEXT) $(am__objects_3)
@@ -207,19 +208,19 @@ rfifind_DEPENDENCIES = $(am__DEPENDENCIES_1)
 am_sdat2dat_OBJECTS = sdat2dat.$(OBJEXT)
 sdat2dat_OBJECTS = $(am_sdat2dat_OBJECTS)
 sdat2dat_LDADD = $(LDADD)
-sdat2dat_DEPENDENCIES =
+sdat2dat_DEPENDENCIES = libpresto.la
 am_search_bin_OBJECTS = search_bin_cmd.$(OBJEXT) search_bin.$(OBJEXT)
 search_bin_OBJECTS = $(am_search_bin_OBJECTS)
 search_bin_LDADD = $(LDADD)
-search_bin_DEPENDENCIES =
+search_bin_DEPENDENCIES = libpresto.la
 am_search_rzw_OBJECTS = search_rzw_cmd.$(OBJEXT) search_rzw.$(OBJEXT)
 search_rzw_OBJECTS = $(am_search_rzw_OBJECTS)
 search_rzw_LDADD = $(LDADD)
-search_rzw_DEPENDENCIES =
+search_rzw_DEPENDENCIES = libpresto.la
 am_shiftdata_OBJECTS = shiftdata.$(OBJEXT)
 shiftdata_OBJECTS = $(am_shiftdata_OBJECTS)
 shiftdata_LDADD = $(LDADD)
-shiftdata_DEPENDENCIES =
+shiftdata_DEPENDENCIES = libpresto.la
 am_show_pfd_OBJECTS = show_pfd_cmd.$(OBJEXT) show_pfd.$(OBJEXT) \
 	prepfold_utils.$(OBJEXT) prepfold_plot.$(OBJEXT) \
 	least_squares.$(OBJEXT) range_parse.$(OBJEXT) $(am__objects_3)
@@ -228,32 +229,33 @@ show_pfd_DEPENDENCIES = $(am__DEPENDENCIES_1)
 am_spigot2filterbank_OBJECTS = spigot2filterbank_cmd.$(OBJEXT) \
 	spigot2filterbank.$(OBJEXT) sla.$(OBJEXT)
 spigot2filterbank_OBJECTS = $(am_spigot2filterbank_OBJECTS)
+am__DEPENDENCIES_2 =
 spigot2filterbank_DEPENDENCIES = $(am__DEPENDENCIES_1) \
-	slalib/libsla.la $(am__DEPENDENCIES_1)
+	slalib/libsla.la $(am__DEPENDENCIES_2)
 am_spigotSband2filterbank_OBJECTS = spigotSband2filterbank.$(OBJEXT)
 spigotSband2filterbank_OBJECTS = $(am_spigotSband2filterbank_OBJECTS)
 spigotSband2filterbank_LDADD = $(LDADD)
-spigotSband2filterbank_DEPENDENCIES =
+spigotSband2filterbank_DEPENDENCIES = libpresto.la
 split_parkes_beams_SOURCES = split_parkes_beams.c
 split_parkes_beams_OBJECTS = split_parkes_beams.$(OBJEXT)
 split_parkes_beams_LDADD = $(LDADD)
-split_parkes_beams_DEPENDENCIES =
+split_parkes_beams_DEPENDENCIES = libpresto.la
 swap_endian_SOURCES = swap_endian.c
 swap_endian_OBJECTS = swap_endian.$(OBJEXT)
 swap_endian_LDADD = $(LDADD)
-swap_endian_DEPENDENCIES =
+swap_endian_DEPENDENCIES = libpresto.la
 am_taperaw_OBJECTS = taperaw.$(OBJEXT)
 taperaw_OBJECTS = $(am_taperaw_OBJECTS)
 taperaw_LDADD = $(LDADD)
-taperaw_DEPENDENCIES =
+taperaw_DEPENDENCIES = libpresto.la
 am_toas2dat_OBJECTS = toas2dat_cmd.$(OBJEXT) toas2dat.$(OBJEXT)
 toas2dat_OBJECTS = $(am_toas2dat_OBJECTS)
 toas2dat_LDADD = $(LDADD)
-toas2dat_DEPENDENCIES =
+toas2dat_DEPENDENCIES = libpresto.la
 un_sc_td_SOURCES = un_sc_td.c
 un_sc_td_OBJECTS = un_sc_td.$(OBJEXT)
 un_sc_td_LDADD = $(LDADD)
-un_sc_td_DEPENDENCIES =
+un_sc_td_DEPENDENCIES = libpresto.la
 am_weight_psrfits_OBJECTS = weight_psrfits.$(OBJEXT) $(am__objects_3)
 weight_psrfits_OBJECTS = $(am_weight_psrfits_OBJECTS)
 weight_psrfits_DEPENDENCIES = $(am__DEPENDENCIES_1)
@@ -354,7 +356,7 @@ CXXCPP = g++ -E
 CXXDEPMODE = depmode=gcc3
 CXXFLAGS = -g -O2
 CYGPATH_W = echo
-DEFS = -DUSEFFTW -DUSEMMAP
+DEFS = -DHAVE_CONFIG_H -DUSEFFTW -DUSEMMAP
 DEPDIR = .deps
 DSYMUTIL = 
 DUMPBIN = 
@@ -399,9 +401,9 @@ OTOOL64 =
 PACKAGE = presto
 PACKAGE_BUGREPORT = mkeith@pulsarastronomy.net
 PACKAGE_NAME = Presto
-PACKAGE_STRING = Presto 1.0
+PACKAGE_STRING = Presto 1.01
 PACKAGE_TARNAME = presto
-PACKAGE_VERSION = 1.0
+PACKAGE_VERSION = 1.01
 PATH_SEPARATOR = :
 PGPLOT_CFLAGS = -I/data/RUBICON_2/kei041/usr/pgplot/
 PGPLOT_LIBS = -L/data/RUBICON_2/kei041/usr/pgplot/ -lcpgplot -lpgplot  -L/data/RUBICON_2/kei041/usr/lib/ -L/usr/lib/gcc/i486-linux-gnu/4.1.2 -L/usr/lib/gcc/i486-linux-gnu/4.1.2/../../../../lib -L/lib/../lib -L/usr/lib/../lib -lgfortranbegin -lgfortran -lm   -lX11  -lX11 -lpng
@@ -416,7 +418,7 @@ SET_MAKE =
 SHELL = /bin/sh
 SOCKET_LIBS = 
 STRIP = strip
-VERSION = 1.0
+VERSION = 1.01
 XMKMF = 
 X_CFLAGS = 
 X_EXTRA_LIBS = 
@@ -427,7 +429,7 @@ abs_srcdir = /data/RUBICON_2/kei041/dev/presto/src
 abs_top_builddir = /data/RUBICON_2/kei041/dev/presto
 abs_top_srcdir = /data/RUBICON_2/kei041/dev/presto
 ac_ct_CC = gcc
-ac_ct_CXX = 
+ac_ct_CXX = g++
 ac_ct_DUMPBIN = 
 ac_ct_F77 = 
 acx_pthread_config = 
@@ -492,10 +494,10 @@ PRESTOOBJS = amoeba.c atwood.c barycenter.c birdzap.c cand_output.c\
 	     fitsfile.c hget.c hput.c imio.c
 
 INSTRUMENTOBJS = multibeam.c bpp.c gmrt.c spigot.c sigproc_fb.c\
-		 wapp.c wapp_head_parse.c wapp_y.tab.c psrfits.c
+		 wapp.c wapp_head_parse.c wapp_mkheaderlex.c wapp_y.tab.c psrfits.c
 
 PLOT2DOBJS = powerplot.c xyline.c
-LDADD = -lm -lpresto -lfftw3f_threads -L/lib -lfftw3f -lm 
+LDADD = -lm libpresto.la -lfftw3f_threads -L/lib -lfftw3f -lm 
 INCLUDES = -I/data/RUBICON_2/kei041/usr/include/glib-2.0 -I/data/RUBICON_2/kei041/usr/lib/glib-2.0/include    -I/include -pthread -DFFTW_THREADS  -I/data/RUBICON_2/kei041/usr/pgplot/ -I/data/RUBICON_2/kei041/dev/presto/include
 libpresto_la_SOURCES = $(PRESTOOBJS) $(INSTRUMENTOBJS)
 accelsearch_SOURCES = accelsearch_cmd.c accel_utils.c accelsearch.c zapping.c
@@ -904,6 +906,7 @@ include ./$(DEPDIR)/un_sc_td.Po
 include ./$(DEPDIR)/vectors.Plo
 include ./$(DEPDIR)/wapp.Plo
 include ./$(DEPDIR)/wapp_head_parse.Plo
+include ./$(DEPDIR)/wapp_mkheaderlex.Plo
 include ./$(DEPDIR)/wapp_y.tab.Plo
 include ./$(DEPDIR)/weight_psrfits.Po
 include ./$(DEPDIR)/window.Po
