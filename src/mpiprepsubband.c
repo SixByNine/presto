@@ -369,22 +369,6 @@ int main(int argc, char *argv[])
             ptsperblk = SUBSBLOCKLEN;
             bytesperpt = sizeof(short); /* Subbands are shorts */
             bytesperblk = cmd->nsub * bytesperpt * ptsperblk;
-            /* What telescope are we using? */
-            if (!strcmp(idata.telescope, "Arecibo")) {
-               strcpy(obs, "AO");
-            } else if (!strcmp(idata.telescope, "Parkes")) {
-               strcpy(obs, "PK");
-            } else if (!strcmp(idata.telescope, "Jodrell")) {
-               strcpy(obs, "JB");
-            } else if (!strcmp(idata.telescope, "GBT")) {
-               strcpy(obs, "GB");
-            } else if (!strcmp(idata.telescope, "GMRT")) {
-               strcpy(obs, "GM");
-            } else {
-               printf("\nYou need to choose a telescope whose data is in\n");
-               printf("$TEMPO/obsys.dat.  Exiting.\n\n");
-               exit(1);
-            }
          }
 
          /* Set-up values if we are using the Parkes multibeam */
@@ -400,16 +384,6 @@ int main(int argc, char *argv[])
             rewind(infiles[0]);
             PKMB_hdr_to_inf(&hdr, &idata);
             PKMB_update_infodata(numinfiles, &idata);
-            /* OBS code for TEMPO */
-            if (!strcmp(idata.telescope, "Parkes"))
-               strcpy(obs, "PK");
-            else if (!strcmp(idata.telescope, "Jodrell"))
-               strcpy(obs, "JB");
-            else {
-               printf
-                   ("\nWARNING!!!:  I don't recognize the observatory (%s)!",
-                    idata.telescope);
-            }
          }
 
          /* Set-up values if we are using the GMRT Phased Array system */
@@ -423,8 +397,6 @@ int main(int argc, char *argv[])
             GMRT_hdr_to_inf(argv[1], &idata);
             GMRT_update_infodata(numinfiles, &idata);
             set_GMRT_padvals(padvals, good_padvals);
-            /* OBS code for TEMPO for the GMRT */
-            strcpy(obs, "GM");
          }
 
          /* Set-up values if we are using SIGPROC filterbank-style data */
@@ -444,22 +416,6 @@ int main(int argc, char *argv[])
             get_filterbank_static(&bytesperpt, &bytesperblk, &clip_sigma);
             filterbank_update_infodata(numinfiles, &idata);
             set_filterbank_padvals(padvals, good_padvals);
-            /* What telescope are we using? */
-            if (!strcmp(idata.telescope, "Arecibo")) {
-               strcpy(obs, "AO");
-            } else if (!strcmp(idata.telescope, "Parkes")) {
-               strcpy(obs, "PK");
-            } else if (!strcmp(idata.telescope, "Jodrell")) {
-               strcpy(obs, "JB");
-            } else if (!strcmp(idata.telescope, "Effelsberg")) {
-               strcpy(obs, "EF");
-            } else if (!strcmp(idata.telescope, "GBT")) {
-               strcpy(obs, "GB");
-            } else {
-               printf("\nYou need to choose a telescope whose data is in\n");
-               printf("$TEMPO/obsys.dat.  Exiting.\n\n");
-               exit(1);
-            }
          }
 
          /* Set-up values if we are using the Berkeley-Caltech */
@@ -473,8 +429,6 @@ int main(int argc, char *argv[])
                             chan_mapping, &clip_sigma);
             BPP_update_infodata(numinfiles, &idata);
             set_BPP_padvals(padvals, good_padvals);
-            /* OBS code for TEMPO for the GBT */
-            strcpy(obs, "GB");
          }
 
          /* Set-up values if we are using the NRAO-Caltech Spigot card */
@@ -492,8 +446,6 @@ int main(int argc, char *argv[])
             get_SPIGOT_static(&bytesperpt, &bytesperblk, &numifs, &clip_sigma);
             SPIGOT_update_infodata(numinfiles, &idata);
             set_SPIGOT_padvals(padvals, good_padvals);
-            /* OBS code for TEMPO for the GBT */
-            strcpy(obs, "GB");
             free(spigots);
          }
 
@@ -501,7 +453,6 @@ int main(int argc, char *argv[])
 
          if (cmd->psrfitsP) {
             struct spectra_info s;
-            char scope[40];
          
             printf("PSRFITS input file information:\n");
             // -1 causes the data to determine if we use weights, scales, & offsets
@@ -519,21 +470,6 @@ int main(int argc, char *argv[])
             get_PSRFITS_static(&bytesperpt, &bytesperblk, &numifs, &clip_sigma);
             PSRFITS_update_infodata(&idata);
             set_PSRFITS_padvals(padvals, good_padvals);
-            strncpy(scope, idata.telescope, 40);
-            strlower(scope);
-            /* OBS codes for TEMPO */
-            if (!strcmp(scope, "parkes")) {
-               strcpy(obs, "PK");
-            } else if (!strcmp(scope, "jodrell")) {
-               strcpy(obs, "JB");
-            } else if (!strcmp(scope, "gbt")) {
-               strcpy(obs, "GB");
-            } else if (!strcmp(scope, "arecibo")) {
-               strcpy(obs, "AO");
-            } else {
-               printf("\nWARNING!!!:  I don't recognize the observatory (%s)!",
-                      idata.telescope);
-            }
          }
 
          /* Set-up values if we are using the Arecobo WAPP */
@@ -546,11 +482,17 @@ int main(int argc, char *argv[])
             get_WAPP_static(&bytesperpt, &bytesperblk, &numifs, &clip_sigma);
             WAPP_update_infodata(numinfiles, &idata);
             set_WAPP_padvals(padvals, good_padvals);
-            strcpy(obs, "AO");  /* OBS code for TEMPO */
          }
 
          /* The number of topo to bary time points to generate with TEMPO */
          numbarypts = (int) (T * 1.1 / TDT + 5.5) + 1;
+
+         // Identify the TEMPO observatory code
+         {
+             char *outscope = (char *) calloc(40, sizeof(char));
+             telescope_to_tempocode(idata.telescope, outscope, obs);
+             free(outscope);
+         }
       }
 
       MPI_Bcast(&ptsperblk, 1, MPI_INT, 0, MPI_COMM_WORLD);

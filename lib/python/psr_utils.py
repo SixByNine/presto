@@ -4,7 +4,7 @@ import Pgplot, ppgplot, bisect, sinc_interp
 from scipy.stats import histogram
 from scipy.special import ndtr, ndtri, chdtrc, chdtri, fdtr, i0, kolmogorov
 from scipy.optimize import leastsq
-from scipy.optimize.minpack import bisection
+import scipy.optimize.zeros as zeros
 from psr_constants import *
 
 isintorlong = lambda x: type(x) == type(0) or type(x) == type(0L)
@@ -382,7 +382,7 @@ def pulsar_mass(pb, x, mc, inc):
     massfunct = mass_funct(pb, x)
     def localmf(mp, mc=mc, mf=massfunct, i=inc*DEGTORAD):
         return mass_funct2(mp, mc, i) - mf
-    return bisection(localmf, 0.0, 1000.0)
+    return zeros.bisect(localmf, 0.0, 1000.0)
         
 def companion_mass(pb, x, inc=60.0, mpsr=1.4):
     """
@@ -397,7 +397,7 @@ def companion_mass(pb, x, inc=60.0, mpsr=1.4):
     massfunct = mass_funct(pb, x)
     def localmf(mc, mp=mpsr, mf=massfunct, i=inc*DEGTORAD):
         return mass_funct2(mp, mc, i) - mf
-    return bisection(localmf, 0.0, 1000.0)
+    return zeros.bisect(localmf, 0.0, 1000.0)
         
 def companion_mass_limit(pb, x, mpsr=1.4):
     """
@@ -459,7 +459,17 @@ def GAMMA_to_Mc(gamma, porb, e, Mp):
     """
     def funct(mc, mp=Mp, porb=porb, e=e, gamma=gamma):
         return GAMMA(porb, e, mp, mc) - gamma
-    return bisection(funct, 0.01, 20.0)
+    return zeros.bisect(funct, 0.01, 20.0)
+
+def shklovskii_effect(pm, D):
+    """
+    shklovskii_effect(pm, D):
+        Return the 'acceleration' due to the transverse Doppler effect
+        (i.e. the Shklovskii Effect) given the proper motion (pm) in mas/yr
+        and the distance (D) in kpc.  Note:  What is returned is a_pm/C,
+        or equivalently, Pdot_pm/P.
+    """
+    return (pm/1000.0*ARCSECTORAD/SECPERJULYR)**2.0 * KMPERKPC*D / (C/1000.0)
 
 def beam_halfwidth(obs_freq, dish_diam):
     """
@@ -839,6 +849,17 @@ def corr(profile, template):
         Cross-correlate (using FFTs) a 'profile' and a 'template'.
     """
     return FFT.irfft(FFT.rfft(template) * Num.conjugate(FFT.rfft(profile)))
+
+def autocorr(x):
+    """
+    autocorr(x):
+        Circular normalized auto-correlation of the (real) function x
+        using FFTs.  Returns only N/2+1 points as the remaining N/2-1
+        points are symmetric (corresponding to negative lags).
+    """
+    fftx = FFT.rfft(x)
+    acf = FFT.irfft(fftx * Num.conjugate(fftx))[:len(x)/2+1]
+    return acf / acf[0]
 
 def maxphase(profile, template):
     """
