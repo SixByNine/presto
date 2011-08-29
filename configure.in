@@ -62,6 +62,8 @@ fi
 AM_PATH_GLIB_2_0
 
 if test "x$GLIB_LIBS" == "x" ; then
+	echo $GLIB_LIBS
+	echo $GLIB_CFLAGS
 	 AC_ERROR("Can't find glib library.");
 fi
 
