@@ -317,6 +317,9 @@ int read_filterbank_header(sigprocfb * fb, FILE * inputfile)
       } else if(strings_equal(string, "ibeam")) {
          chkfread(&(fb->ibeam),sizeof(int),1,inputfile);
          totalbytes += sizeof(int);
+      } else if(strings_equal(string, "signed")) {
+         chkfread(&(fb->isign),sizeof(char),1,inputfile);
+         totalbytes += sizeof(char);
       } else if (strings_equal(string,"barycentric")) {
          fread(&(fb->barycentric),sizeof(int),1,inputfile);
          totalbytes+=sizeof(int);
@@ -374,6 +377,11 @@ void print_filterbank_header(sigprocfb * fb)
    printf("      Total Bandwidth (MHz) = %-17.15g\n", fabs(fb->foff * fb->nchans));
    printf("      Number of IFs present = %d\n", fb->nifs);
    printf("            Bits per sample = %d\n", fb->nbits);
+   if (fb->isign > 0){
+      printf("                 Signedness = UNSIGNED\n");
+   } else if(fb->isign < 0){
+      printf("                 Signedness = SIGNED\n");
+   }
    if (fb->az_start != 0.0 || fb->za_start != 0.0){
       printf("        Start azimuth (deg) = %.3f\n", fb->az_start);
       printf("   Start zenith angle (deg) = %.3f\n", fb->za_start);
@@ -494,6 +502,11 @@ void get_filterbank_file_info(FILE * files[], int numfiles, float clipsig,
       exit(0);
    } else {
       bytesperpt_st = 1;
+      if (fb_st[0].isign < 0){
+	      printf("\nThe signedness of 8-bit sigproc data must be UNSIGNED\n");
+	      printf("   Exiting.\n\n");
+	      exit(0);
+      }
    }
    sigprocfb_to_inf(fb_st + 0, idata_st + 0);
    chkfseek(files[0], fb_st[0].headerlen, SEEK_SET);
@@ -557,7 +570,8 @@ void get_filterbank_file_info(FILE * files[], int numfiles, float clipsig,
       printf("  Total points (N) = %lld\n", N_st);
       printf("  Sample time (dt) = %-14.14g\n", dt_st);
       printf("    Total time (s) = %-14.14g\n", T_st);
-      printf(" Header length (B) = %d\n\n", headerlen);
+      printf(" Header length (B) = %d\n", headerlen);
+      printf("        Signedness = UNSIGNED (assumed)\n\n");
       printf
           ("File  Start Block    Last Block     Points      Elapsed (s)      Time (s)            MJD           Padding\n");
       printf

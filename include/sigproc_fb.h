@@ -21,7 +21,8 @@ typedef struct SIGPROCFB {
   int sumifs;            /* Whether the IFs are summed or not */
   int headerlen;         /* Header length in bytes */
   int barycentric;       /* is it barycentric corrected */
-  double refdm		 /* The DM if it's already been dedispersed */
+  double refdm;		 /* The DM if it's already been dedispersed */
+  char isign;            /* The signedness of the 8-bit numbers */
 } sigprocfb;
 
 /* sigproc_fb.c */
