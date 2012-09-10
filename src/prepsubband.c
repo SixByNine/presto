@@ -499,7 +499,7 @@ int main(int argc, char *argv[])
          dtmp = subdispdt[cmd->nsub - 1];
          for (jj = 0; jj < cmd->nsub; jj++)
             offsets[ii][jj] = NEAREST_INT((subdispdt[jj] - dtmp) / dsdt);
-         free(subdispdt);
+         vect_free(subdispdt);
       }
 
       /* Allocate our data array and start getting data */
@@ -594,7 +594,7 @@ int main(int argc, char *argv[])
          avgvoverc += voverc[ii];
       }
       avgvoverc /= numbarypts;
-      free(voverc);
+      vect_free(voverc);
       blotoa = btoa[0];
 
       printf("   Average topocentric velocity (c) = %.7g\n", avgvoverc);
@@ -628,7 +628,7 @@ int main(int argc, char *argv[])
          dtmp = subdispdt[cmd->nsub - 1];
          for (jj = 0; jj < cmd->nsub; jj++)
             offsets[ii][jj] = NEAREST_INT((subdispdt[jj] - dtmp) / dsdt);
-         free(subdispdt);
+         vect_free(subdispdt);
       }
 
       /* Convert the bary TOAs to differences from the topo TOAs in */
@@ -877,7 +877,7 @@ int main(int argc, char *argv[])
 
    if (cmd->maskfileP) {
       free_mask(obsmask);
-      free(padvals);
+      vect_free(padvals);
    }
    for (ii = 0; ii < numinfiles; ii++)
       fclose(infiles[ii]);
@@ -885,22 +885,22 @@ int main(int argc, char *argv[])
    for (ii = 0; ii < cmd->numdms; ii++)
       fclose(outfiles[ii]);
    if (cmd->subP) {
-      free(subsdata[0]);
-      free(subsdata);
+      vect_free(subsdata[0]);
+      vect_free(subsdata);
    } else {
-      free(outdata[0]);
-      free(outdata);
+      vect_free(outdata[0]);
+      vect_free(outdata);
    }
    free(outfiles);
-   free(dms);
-   free(dispdt);
-   free(offsets[0]);
-   free(offsets);
+   vect_free(dms);
+   vect_free(dispdt);
+   vect_free(offsets[0]);
+   vect_free(offsets);
    free(datafilenm);
    if (!cmd->nobaryP) {
-      free(btoa);
-      free(ttoa);
-      free(diffbins);
+      vect_free(btoa);
+      vect_free(ttoa);
+      vect_free(diffbins);
    }
    return (0);
 }
@@ -953,7 +953,7 @@ static void write_padding(FILE * outfiles[], int numfiles, float value,
          for (jj = 0; jj < numfiles; jj++)
             chkfwrite(buffer, sizeof(float), numtowrite % veclen, outfiles[jj]);
       }
-      free(buffer);
+      vect_free(buffer);
    }
 }
 
@@ -964,9 +964,10 @@ static int read_subbands(FILE * infiles[], int numfiles,
                          float clip_sigma, float *padvals)
 /* Read short int subband data written by prepsubband */
 {
-   int ii, jj, index, numread = 0, mask = 0;
+   int ii, jj, index, numread = 0, mask = 0,offset;
    short subsdata[SUBSBLOCKLEN]; 
-   double starttime;
+   double starttime, run_avg;
+   float subband_sum;
    static int currentblock = 0;
 
    if (obsmask->numchan) mask = 1;
@@ -974,8 +975,14 @@ static int read_subbands(FILE * infiles[], int numfiles,
    /* Read the data */
    for (ii = 0; ii < numfiles; ii++) {
       numread = chkfread(subsdata, sizeof(short), SUBSBLOCKLEN, infiles[ii]);
+      run_avg = 0.0;
+      if (cmd->runavgP==1) {
+          for (jj = 0; jj < numread ; jj++)
+              run_avg += (float) subsdata[jj];
+          run_avg /= numread;
+      }
       for (jj = 0, index = ii; jj < numread; jj++, index += numfiles)
-         subbanddata[index] = (float) subsdata[jj];
+         subbanddata[index] = (float) subsdata[jj] - run_avg;
       for (jj = numread; jj < SUBSBLOCKLEN; jj++, index += numfiles)
          subbanddata[index] = 0.0;
       index += numread;
@@ -1007,6 +1014,23 @@ static int read_subbands(FILE * infiles[], int numfiles,
          }
       }
    }
+
+   /* Zero-DM removal if required */
+   if (cmd->zerodmP==1) {
+       for (ii = 0; ii < SUBSBLOCKLEN; ii++) {
+           offset = ii * numfiles;
+           subband_sum = 0.0; 
+           for (jj = offset; jj < offset+numfiles; jj++) {
+               subband_sum += subbanddata[jj];
+           }    
+           subband_sum /= (float) numfiles;
+           /* Remove the channel average */
+           for (jj = offset; jj < offset+numfiles; jj++) {
+               subbanddata[jj] -= subband_sum;
+           }    
+       }    
+   }
+
    currentblock += 1;
    return numread;
 }
@@ -1164,12 +1188,12 @@ static int get_data(FILE * infiles[], int numfiles, float **outdata,
    SWAP(currentdsdata, lastdsdata);
    if (totnumread != worklen) {
       if (cmd->maskfileP)
-         free(maskchans);
-      free(data1);
-      free(data2);
+         vect_free(maskchans);
+      vect_free(data1);
+      vect_free(data2);
       if (cmd->downsamp > 1) {
-         free(dsdata1);
-         free(dsdata2);
+         vect_free(dsdata1);
+         vect_free(dsdata2);
       }
    }
    return totnumread;

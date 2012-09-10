@@ -438,9 +438,9 @@ int read_PKMB(FILE * infiles[], int numfiles, float *data,
       numread = read_PKMB_rawblocks(infiles, numfiles, raw, numblocks, padding);
       if (numread != numblocks && allocd) {
          printf("Problem reading the raw PKMB data file.\n\n");
-         free(raw);
-         free(rawdata1);
-         free(rawdata2);
+         vect_free(raw);
+         vect_free(rawdata1);
+         vect_free(rawdata2);
          allocd = 0;
          return 0;
       }
@@ -509,9 +509,9 @@ int read_PKMB(FILE * infiles[], int numfiles, float *data,
       SWAP(currentdata, lastdata);
 
       if (numread != numblocks) {
-         free(raw);
-         free(rawdata1);
-         free(rawdata2);
+         vect_free(raw);
+         vect_free(rawdata1);
+         vect_free(rawdata2);
          allocd = 0;
       }
       return numread * ptsperblk_st;
@@ -685,6 +685,11 @@ void PKMB_hdr_to_inf(PKMB_tapehdr * hdr, infodata * idata)
    sscanf(hdr->ra_start, "%3d:%2d:%9lf", &idata->ra_h, &idata->ra_m, &idata->ra_s);
    sscanf(hdr->dec_start,
           "%3d:%2d:%9lf", &idata->dec_d, &idata->dec_m, &idata->dec_s);
+   /* make sure to catch minus sign for "+/-00:XX:XX.XX" Dec string in header */
+   if (idata->dec_d == 0 && (hdr->dec_start)[0] == '-') {
+      idata->dec_m = -idata->dec_m;
+      idata->dec_s = -idata->dec_s;
+   }
    if (!strncmp(hdr->telid, "PARKES", 6))
       strcpy(idata->telescope, "Parkes");
    else if (strncmp(hdr->telid, "  0.", 4) == 0 ||
@@ -999,8 +1004,8 @@ int clip_PKMB_times(unsigned char *rawdata, int ptsperblk, int numchan,
    }
    blocksread++;
 
-   free(zero_dm_block);
-   free(median_temp);
+   vect_free(zero_dm_block);
+   vect_free(median_temp);
 
    return clipped;
 }

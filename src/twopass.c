@@ -157,5 +157,5 @@ void twopassfft_scratch(multifile * infile, multifile * scratch,
       }
    }
    free(move);
-   free(data);
+   vect_free(data);
 }

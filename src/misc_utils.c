@@ -187,6 +187,9 @@ void telescope_to_tempocode(char *inname, char *outname, char*obscode)
     } else if (strcmp(scope, "gmrt") == 0) {
         strcpy(obscode, "GM");
         strcpy(outname, "GMRT");
+    } else if (strcmp(scope, "lofar") == 0 ) {
+      strcpy(obscode, "LF");
+      strcpy(outname, "LOFAR");
     } else if (strcmp(scope, "geocenter") == 0) {
         strcpy(obscode, "EC");
         strcpy(outname, "Geocenter");
@@ -314,7 +317,7 @@ void rotate_1d(float *data, long numbins, long bins_to_left)
    memcpy(tmp, data, sizeof(float) * bins_to_left);
    memmove(data, data + bins_to_left, sizeof(float) * (numbins - bins_to_left));
    memcpy(data + bins_to_left, tmp, sizeof(float) * bins_to_left);
-   free(tmp);
+   vect_free(tmp);
 }
 
 
@@ -335,7 +338,7 @@ void drotate_1d(double *data, long numbins, long bins_to_left)
    memcpy(tmp, data, sizeof(double) * bins_to_left);
    memmove(data, data + bins_to_left, sizeof(double) * (numbins - bins_to_left));
    memcpy(data + bins_to_left, tmp, sizeof(double) * bins_to_left);
-   free(tmp);
+   vect_free(tmp);
 }
 
 
@@ -358,7 +361,7 @@ void frotate(float *data, long numbins, float bins_to_left)
       tmp[i] = hipart * data[(index + i) % numbins] +
           lopart * data[(index + i + 1) % numbins];
    memcpy(data, tmp, sizeof(float) * numbins);
-   free(tmp);
+   vect_free(tmp);
 }
 
 
@@ -380,7 +383,7 @@ void drotate(double *data, long numbins, double bins_to_left)
       tmp[i] = hipart * data[(index + i) % numbins] +
           lopart * data[(index + i + 1) % numbins];
    memcpy(data, tmp, sizeof(double) * numbins);
-   free(tmp);
+   vect_free(tmp);
 }
 
 

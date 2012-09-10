@@ -37,8 +37,7 @@ int main(int argc, char *argv[])
    }
    printf("\n\n");
    printf("         Binary Candidate Display Routine\n");
-   printf("              by Scott M. Ransom\n");
-   printf("                3 January, 1998\n\n");
+   printf("              by Scott M. Ransom\n\n");
 
    /* Initialize the filenames: */
 
@@ -58,7 +57,7 @@ int main(int argc, char *argv[])
    /* Open the FFT file and get its length */
 
    fftfile = chkfopen(filenm, "rb");
-   nbins = chkfilelen(candfile, sizeof(fcomplex));
+   nbins = chkfilelen(fftfile, sizeof(fcomplex));
 
    /* Open the candidate file and get its length */
 
@@ -184,7 +183,7 @@ int main(int argc, char *argv[])
    freqs = gen_freqs(binprops.nfftbins, binprops.lowbin / T, 1.0 / T);
    xyline(binprops.nfftbins, freqs, powr, "Pulsar Frequency (hz)",
           "Power / Local Power", 1);
-   free(freqs);
+   vect_free(freqs);
    printf("The initial data set (with high power outliers removed):\n\n");
 
    /* Plot the miniFFT */
@@ -192,7 +191,7 @@ int main(int argc, char *argv[])
    freqs = gen_freqs(binprops.nfftbins, 0.0, T / (2 * binprops.nfftbins));
    xyline(binprops.nfftbins, freqs, spreadpow, "Binary Period (sec)",
           "Normalized Power", 1);
-   free(freqs);
+   vect_free(freqs);
    printf("The miniFFT:\n\n");
 
    /* Interpolate and plot the actual candidate peak */
@@ -207,22 +206,22 @@ int main(int argc, char *argv[])
       minizoompow[ii] = POWER(minizoom[ii].r, minizoom[ii].i);
    }
    xyline(nzoom, freqs, minizoompow, "Binary Period (sec)", "Normalized Power", 1);
-   free(freqs);
+   vect_free(freqs);
    printf("The candidate itself:\n\n");
    printf("Done.\n\n");
 
    /* Cleanup */
 
    cpgend();
-   free(data);
-   free(powr);
-   free(resp);
-   free(kernel);
-   free(minifft);
-   free(spread);
-   free(spreadpow);
-   free(minizoom);
-   free(minizoompow);
+   vect_free(data);
+   vect_free(powr);
+   vect_free(resp);
+   vect_free(kernel);
+   vect_free(minifft);
+   vect_free(spread);
+   vect_free(spreadpow);
+   vect_free(minizoom);
+   vect_free(minizoompow);
    fclose(fftfile);
    if ((argc == 6) && (!strcmp(argv[5], "ps"))) {
       fclose(psfile);

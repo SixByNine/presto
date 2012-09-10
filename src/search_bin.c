@@ -331,9 +331,9 @@ int main(int argc, char *argv[])
       }
 
       if (cmd->stack == 0)
-         free(data);
+         vect_free(data);
       else
-         free(powers);
+         vect_free(powers);
       filepos += (numtoread - (int) ((1.0 - cmd->overlap) * cmd->maxfft));
       loopct++;
 
@@ -403,7 +403,7 @@ int main(int argc, char *argv[])
    /* Free our arrays and close our files */
 
    if (cmd->stack == 0)
-      free(powers);
+      vect_free(powers);
    free(list);
    fftwf_free(minifft);
    free(notes);

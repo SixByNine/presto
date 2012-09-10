@@ -102,8 +102,8 @@ int main(int argc, char *argv[])
          chkfwrite(soutbuffer, sizeof(short), numread / cmd->factor, outfile);
          N += numread / cmd->factor;
       }
-      free(sinbuffer);
-      free(soutbuffer);
+      vect_free(sinbuffer);
+      vect_free(soutbuffer);
    } else {
       inbuffer = gen_fvect(bufflen * cmd->factor);
       outbuffer = gen_fvect(bufflen);
@@ -117,8 +117,8 @@ int main(int argc, char *argv[])
          chkfwrite(outbuffer, sizeof(float), numread / cmd->factor, outfile);
          N += numread / cmd->factor;
       }
-      free(inbuffer);
-      free(outbuffer);
+      vect_free(inbuffer);
+      vect_free(outbuffer);
    }
    printf("Done.  Wrote %lld points.\n\n", N);
 
