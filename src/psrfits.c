@@ -7,6 +7,7 @@
 #include "mask.h"
 #include "psrfits.h"
 
+#define DEBUG_OUT 1
 #define DEBUGOUT 1
 
 static struct spectra_info S;
@@ -174,6 +175,7 @@ int read_PSRFITS_files(char **filenames, int numfiles, struct spectra_info *s)
     long double MJDf;
     char ctmp[80], comment[120];
     
+    printf("\nTTT\n\n");
     if (numfiles > MAXPFITSFILES) {
         printf("Error!: There are more than %d input files!\n", MAXPFITSFILES);
         exit(1);
@@ -594,6 +596,8 @@ int read_PSRFITS_files(char **filenames, int numfiles, struct spectra_info *s)
         s->flip_bytes = 0;
     }
 
+
+    //print_PSRFITS_info(s);
     // Copy the structures and return success
     S = *s;
 

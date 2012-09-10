@@ -631,6 +631,7 @@ int main(int argc, char *argv[])
          int numwritten = 0;
          double block_avg, block_var;
 
+	 printf("XX=%d\n",cmd->psrfitsP);
          if (cmd->pkmbP)
             numread = read_PKMB(infiles, numfiles, outdata, worklen,
                                 dispdt, &padding, maskchans, &nummasked, &obsmask);
