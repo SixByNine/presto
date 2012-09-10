@@ -1,8 +1,6 @@
-## Automatically adapted for numpy Apr 14, 2006 by convertcode.py
-
 import numpy as Num
-import struct
-import sys, psr_utils, infodata, polycos, Pgplot, copy, random
+import copy, random, struct, sys
+import psr_utils, infodata, polycos, Pgplot
 from types import StringType, FloatType, IntType
 from bestprof import bestprof
 
@@ -90,6 +88,11 @@ class pfd:
         (self.fold_pow, tmp) = struct.unpack(swapchar+"f"*2, infile.read(2*4))
         (self.fold_p1, self.fold_p2, self.fold_p3) = struct.unpack(swapchar+"d"*3, \
                                                                    infile.read(3*8))
+        # Save current p, pd, pdd
+        # NOTE: Fold values are actually frequencies!
+        self.curr_p1, self.curr_p2, self.curr_p3 = \
+                psr_utils.p_to_f(self.fold_p1, self.fold_p2, self.fold_p3)
+        self.pdelays_bins = Num.zeros(self.npart, dtype='d')
         (self.orb_p, self.orb_e, self.orb_x, self.orb_w, self.orb_t, self.orb_pd, \
          self.orb_wd) = struct.unpack(swapchar+"d"*7, infile.read(7*8))
         self.dms = Num.asarray(struct.unpack(swapchar+"d"*self.numdms, \
@@ -129,6 +132,8 @@ class pfd:
         self.subfreqs = Num.arange(self.nsub, dtype='d')*self.subdeltafreq + \
                         self.losubfreq
         self.subdelays_bins = Num.zeros(self.nsub, dtype='d')
+        # Save current DM
+        self.currdm = 0
         self.killed_subbands = []
         self.killed_intervals = []
         self.pts_per_fold = []
@@ -232,6 +237,7 @@ class pfd:
         self.sumprof = self.profs.sum(0).sum(0)
         if Num.fabs((self.sumprof/self.proflen).sum() - self.avgprof) > 1.0:
             print "self.avgprof is not the correct value!"
+        self.currdm = DM
 
     def freq_offsets(self, p=None, pd=None, pdd=None):
         """
@@ -248,15 +254,20 @@ class pfd:
             bestpd = self.bary_p2
             bestpdd = self.bary_p3
         else:
-            bestp = self.topo_p1
-            bestpd = self.topo_p2
-            bestpdd = self.topo_p3
+            if self.topo_p1 == 0.0:
+                bestp = self.fold_p1
+                bestpd = self.fold_p2
+                bestpdd = self.fold_p3
+            else:
+                bestp = self.topo_p1
+                bestpd = self.topo_p2
+                bestpdd = self.topo_p3
         if p is not None:
             bestp = p
         if pd is not None:
-            bestpd = pdot
+            bestpd = pd
         if pdd is not None:
-            bestpdd = pdotdot
+            bestpdd = pdd
 
         # self.fold_p[123] are actually frequencies, convert to periods
         foldf, foldfd, foldfdd = self.fold_p1, self.fold_p2, self.fold_p3
@@ -272,6 +283,7 @@ class pfd:
         # Get frequency and frequency derivative offsets
         f_diff = bestf - foldf
         fd_diff = bestfd - foldfd
+
         # bestpdd=0.0 only if there was no searching over pdd
         if bestpdd != 0.0:
             fdd_diff = bestfdd - foldfdd
@@ -280,18 +292,97 @@ class pfd:
 
         return (f_diff, fd_diff, fdd_diff)
 
+    def use_for_timing(self):
+        """
+        use_for_timing():
+            This method returns True or False depending on whether
+            the .pfd file can be used for timing or not.  For this
+            to return true, the pulsar had to have been folded with
+            a parfile and -no[p/pd]search (this includes -timing), or
+            with a p/pdot/pdotdot and a corresponding -no[p/pd]search.
+            In other words, if you let prepfold search for the best
+            p/pdot/pdotdot, you will get bogus TOAs if you try timing
+            with it.
+        """
+        T = self.T
+        bin_dphi = 1.0/self.proflen
+        # If any of the offsets causes more than a 0.1-bin rotation over
+        # the obs, then prepfold searched and we can't time using it
+        offsets = Num.fabs(Num.asarray(self.freq_offsets()))
+        dphis = offsets * Num.asarray([T, T**2.0/2.0, T**3.0/6.0])
+        if max(dphis) > 0.1 * bin_dphi:
+            return False
+        else:
+            return True
+
     def time_vs_phase(self, p=None, pd=None, pdd=None, interp=0):
         """
         time_vs_phase(p=*bestp*, pd=*bestpd*, pdd=*bestpdd*):
             Return the 2D time vs. phase profiles shifted so that
                 the given period and period derivative are applied.
-                Use FFT-based interpolation if 'interp' is non-zero 
-                (NOTE: It is off by default!).
-
-            Dedisperses the datacube, if necessary.
-            Other than running self.dedisperse(), the datacube
-                is not modified.
+                Use FFT-based interpolation if 'interp' is non-zero.
+                (NOTE: It is off by default as in prepfold!).
         """
+        # Cast to single precision and back to double precision to
+        # emulate prepfold_plot.c, where parttimes is of type "float"
+        # but values are upcast to "double" during computations.
+        # (surprisingly, it affects the resulting profile occasionally.)
+        parttimes = self.start_secs.astype('float32').astype('float64')
+
+        # Get delays
+        f_diff, fd_diff, fdd_diff = self.freq_offsets(p, pd, pdd)
+        #print "DEBUG: in myprepfold.py -- parttimes", parttimes
+        delays = psr_utils.delay_from_foffsets(f_diff, fd_diff, fdd_diff, parttimes)
+
+        # Convert from delays in phase to delays in bins
+        bin_delays = Num.fmod(delays * self.proflen, self.proflen) - self.pdelays_bins
+
+        # Rotate subintegrations
+        # subints = self.combine_profs(self.npart, 1)[:,0,:] # Slower than sum by ~9x
+        subints = Num.sum(self.profs, axis=1).squeeze()
+        if interp:
+            new_pdelays_bins = bin_delays
+            for ii in range(self.npart):
+                tmp_prof = subints[ii,:]
+                # Negative sign in num bins to shift because we calculated delays
+                # Assuming +ve is shift-to-right, psr_utils.rotate assumes +ve
+                # is shift-to-left
+                subints[ii,:] = psr_utils.fft_rotate(tmp_prof, -new_pdelays_bins[ii])
+        else:
+            new_pdelays_bins = Num.floor(bin_delays+0.5)
+            indices = Num.outer(Num.arange(self.proflen), Num.ones(self.npart))
+            indices = Num.mod(indices-new_pdelays_bins, self.proflen).T
+            indices += Num.outer(Num.arange(self.npart)*self.proflen, \
+                                    Num.ones(self.proflen))
+            subints = subints.flatten('C')[indices.astype('i8')]
+        return subints
+
+    def adjust_period(self, p=None, pd=None, pdd=None, interp=0):
+        """
+        adjust_period(p=*bestp*, pd=*bestpd*, pdd=*bestpdd*):
+            Rotate (internally) the profiles so that they are adjusted to
+                the given period and period derivatives.  By default,
+                use the 'best' values as determined by prepfold's seaqrch.
+                This should orient all of the profiles so that they are
+                almost identical to what you see in a prepfold plot which
+                used searching.  Use FFT-based interpolation if 'interp'
+                is non-zero.  (NOTE: It is off by default, as in prepfold!)
+        """
+        if self.fold_pow == 1.0:
+            bestp = self.bary_p1
+            bestpd = self.bary_p2
+            bestpdd = self.bary_p3
+        else:
+            bestp = self.topo_p1
+            bestpd = self.topo_p2
+            bestpdd = self.topo_p3
+        if p is None:
+            p = bestp
+        if pd is None:
+            pd = bestpd
+        if pdd is None:
+            pdd = bestpdd
+
         # Cast to single precision and back to double precision to
         # emulate prepfold_plot.c, where parttimes is of type "float"
         # but values are upcast to "double" during computations.
@@ -303,20 +394,36 @@ class pfd:
         delays = psr_utils.delay_from_foffsets(f_diff, fd_diff, fdd_diff, parttimes)
 
         # Convert from delays in phase to delays in bins
-        bin_delays = Num.fmod(delays * self.proflen, self.proflen)
+        bin_delays = Num.fmod(delays * self.proflen, self.proflen) - self.pdelays_bins
+        if interp:
+            new_pdelays_bins = bin_delays
+        else:
+            new_pdelays_bins = Num.floor(bin_delays+0.5)
 
         # Rotate subintegrations
-        subints = self.combine_profs(self.npart, 1)[:,0,:]
-        for ii in range(self.npart):
-            tmp_prof = subints[ii,:]
-            # Negative sign in num bins to shift because we calculated delays
-            # Assuming +ve is shift-to-right, psr_utils.rotate assumes +ve
-            # is shift-to-left
-            if interp:
-                subints[ii,:] = psr_utils.fft_rotate(tmp_prof, -bin_delays[ii])
-            else:
-                subints[ii,:] = psr_utils.rotate(tmp_prof, -Num.floor(bin_delays[ii]+0.5))
-        return subints
+        for ii in range(self.nsub):
+            for jj in range(self.npart):
+                tmp_prof = self.profs[jj,ii,:]
+                # Negative sign in num bins to shift because we calculated delays
+                # Assuming +ve is shift-to-right, psr_utils.rotate assumes +ve
+                # is shift-to-left
+                if interp:
+                    self.profs[jj,ii] = psr_utils.fft_rotate(tmp_prof, -new_pdelays_bins[jj])
+                else:
+                    self.profs[jj,ii] = psr_utils.rotate(tmp_prof, \
+                                            -new_pdelays_bins[jj])
+        self.pdelays_bins += new_pdelays_bins
+        if interp:
+            # Note: Since the rotation process slightly changes the values of the
+            # profs, we need to re-calculate the average profile value
+            self.avgprof = (self.profs/self.proflen).sum()
+
+        self.sumprof = self.profs.sum(0).sum(0)
+        if Num.fabs((self.sumprof/self.proflen).sum() - self.avgprof) > 1.0:
+            print "self.avgprof is not the correct value!"
+
+        # Save current p, pd, pdd
+        self.curr_p1, self.curr_p2, self.curr_p3 = p, pd, pdd
 
     def combine_profs(self, new_npart, new_nsub):
         """

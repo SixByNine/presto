@@ -114,7 +114,7 @@ double max_rz_file(FILE * fftfile, double rin, double zin,
    maxpow = max_rz_arr(filedata, filedatalen, rin_frac + filedatalen / 2,
                        zin, rout, zout, derivs);
    *rout += startbin;
-   free(filedata);
+   vect_free(filedata);
    return maxpow;
 }
 
@@ -230,8 +230,8 @@ void max_rz_arr_harmonics(fcomplex* data[], int num_harmonics,
        get_derivs3d(data[i-1], numdata, (r_offset[i-1]+*rout)*i-r_offset[i-1], (*zout)*i, 0.0, locpow[i-1], &(derivs[i-1]));
    }
 
-   free(locpow);
-   free(maxlocpow);
+   vect_free(locpow);
+   vect_free(maxlocpow);
 }
 
 void max_rz_file_harmonics(FILE * fftfile, int num_harmonics,
@@ -269,7 +269,7 @@ void max_rz_file_harmonics(FILE * fftfile, int num_harmonics,
 
    *rout += r_offset[0];
    for (i=1;i<=num_harmonics;i++) {
-       free(filedata[i-1]);
+       vect_free(filedata[i-1]);
    }
    free(r_offset);
    free(filedata);

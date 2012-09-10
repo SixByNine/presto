@@ -172,12 +172,12 @@ int corr_complex(fcomplex * data, int numdata, presto_datainf datainf,
          /* Spread the data */
 
          if (!firsttime)
-            free(dataarray);
+            vect_free(dataarray);
          dataarray = gen_cvect(fftlen);
          spread_no_pad(tmpdata, numbins, dataarray, fftlen, numbetween);
 
          if ((beginbin < 0) || (endbin > numdata))
-            free(tmpdata);
+            vect_free(tmpdata);
 
          /* FFT the Data */
 
@@ -190,7 +190,7 @@ int corr_complex(fcomplex * data, int numdata, presto_datainf datainf,
 #endif
 
          if (!firsttime)
-            free(dataarray);
+            vect_free(dataarray);
          dataarray = gen_cvect(fftlen);
          memcpy(dataarray, data, sizeof(fcomplex) * fftlen);
 
@@ -205,7 +205,7 @@ int corr_complex(fcomplex * data, int numdata, presto_datainf datainf,
 #endif
 
          if (!firsttime)
-            free(dataarray);
+            vect_free(dataarray);
          dataarray = gen_cvect(fftlen);
          memcpy(dataarray, data, sizeof(fcomplex) * fftlen);
 
@@ -217,7 +217,7 @@ int corr_complex(fcomplex * data, int numdata, presto_datainf datainf,
    if (firsttime || !(kerninf == SAME && fftlen == oldfftlen)) {
 
       if (!firsttime)
-         free(kernarray);
+         vect_free(kernarray);
       kernarray = gen_cvect(fftlen);
 
       if (kerninf == RAW) {
@@ -256,7 +256,7 @@ int corr_complex(fcomplex * data, int numdata, presto_datainf datainf,
 
    chop_complex_ends(tmpdata, fftlen, result, numresult,
                      kern_half_width * numbetween);
-   free(tmpdata);
+   vect_free(tmpdata);
 
    /* Set variables for next time... */
 
@@ -304,7 +304,7 @@ void stretch_fft(fcomplex * data, int numdata, fcomplex * result, int numresult)
    corr_complex(data, numdata, RAW,
                 kernel, numkern, RAW,
                 result, numresult, 0, numbetween, kern_half_width, CORR);
-   free(kernel);
+   vect_free(kernel);
 }
 
 
@@ -338,7 +338,7 @@ float *corr_loc_pow(float *powers, int numpowers)
 
    if (firsttime || numpowers != old_numpowers) {
       if (!firsttime)
-         free(kernel);
+         vect_free(kernel);
       kernel = gen_fvect(numpowers);
       for (ii = 0; ii < numpowers; ii++)
          kernel[ii] = 0.0;

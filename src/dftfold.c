@@ -91,7 +91,7 @@ int main(int argc, char *argv[])
       fftdata = read_fcomplex_file(fftfile, startbin, fftdatalen);
       norm = 1.0 / sqrt(get_localpower3d(fftdata, fftdatalen,
                                          rrfrac + fftdatalen / 2, 0.0, 0.0));
-      free(fftdata);
+      vect_free(fftdata);
       fclose(fftfile);
    }
 
@@ -140,7 +140,7 @@ int main(int argc, char *argv[])
          sumreal += dftvec.vector[ii].r;
          sumimag += dftvec.vector[ii].i;
       }
-      free(data);
+      vect_free(data);
       printf("\nDone:\n");
       printf("             Vector sum = %.3f + %.3fi\n", sumreal, sumimag);
       printf("      Total phase (deg) = %.2f\n", PHASE(sumreal, sumimag));
@@ -228,5 +228,5 @@ void init_dftvector(dftvector * data, int n, int numvect,
 void free_dftvector(dftvector * data)
 /* Free the dynamically allocated vector in data */
 {
-   free(data->vector);
+   vect_free(data->vector);
 }
